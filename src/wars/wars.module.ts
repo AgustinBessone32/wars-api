@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from '../auth/auth.module';
 import { War, WarSchema } from './entities/war.entity';
 import { WarsController } from './wars.controller';
 import { WarsService } from './wars.service';
@@ -8,6 +9,7 @@ import { WarsService } from './wars.service';
   controllers: [WarsController],
   providers: [WarsService],
   imports: [
+    AuthModule,
     MongooseModule.forFeature([
       {
         name: War.name,

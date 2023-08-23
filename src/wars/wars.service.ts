@@ -4,6 +4,7 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
+  SetMetadata,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -33,6 +34,7 @@ export class WarsService {
     return war;
   }
 
+  @SetMetadata('roles', ['user'])
   async findOne(id: number) {
     let war: War;
 

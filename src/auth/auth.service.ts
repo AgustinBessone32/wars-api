@@ -4,21 +4,27 @@ import {
   InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    private readonly jwtService: JwtService,
   ) {}
   async create(createUserDto: CreateUserDto) {
     try {
-      const user = this.userModel.create(createUserDto);
+      const user = await this.userModel.create(createUserDto);
 
-      return user;
+      return {
+        user,
+        token: this.getJwtToken({ email: user.email }),
+      };
     } catch (error) {
       this.handleDBErrors(error);
     }
@@ -34,10 +40,19 @@ export class AuthService {
         throw new UnauthorizedException(`Not valid credentials (email)`);
       }
 
-      return user;
+      return {
+        user,
+        token: this.getJwtToken({ email: user.email }),
+      };
     } catch (error) {
       this.handleDBErrors(error);
     }
+  }
+
+  private getJwtToken(payload: JwtPayload) {
+    const tkn = this.jwtService.sign(payload);
+
+    return tkn;
   }
 
   private handleDBErrors(error: any) {
