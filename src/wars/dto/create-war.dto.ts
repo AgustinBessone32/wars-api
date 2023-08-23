@@ -3,9 +3,13 @@ export class CreateWarDto {
   @IsInt()
   @IsPositive()
   @Min(1)
-  no: number;
+  episode_id: number;
 
   @IsString()
   @MinLength(1)
-  name: string;
+  title: string;
+
+  @IsString()
+  @MinLength(1)
+  director: string;
 }

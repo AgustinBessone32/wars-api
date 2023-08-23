@@ -16,8 +16,6 @@ export class WarsService {
   constructor(@InjectModel(War.name) private readonly warModel: Model<War>) {}
 
   async create(createWarDto: CreateWarDto) {
-    createWarDto.name = createWarDto.name.toLowerCase();
-
     try {
       const war = await this.warModel.create(createWarDto);
 
@@ -27,25 +25,26 @@ export class WarsService {
     }
   }
 
-  findAll() {
-    return `This action returns all wars`;
-  }
+  async findAll() {
+    let war: War[];
 
-  async findOne(name: string) {
-    let war: War;
-
-    war = await this.warModel.findOne({ name: name.toLowerCase().trim() });
-
-    if (!war) throw new NotFoundException(`War with name ${name} not found`);
+    war = await this.warModel.find();
 
     return war;
   }
 
-  async update(name: string, updateWarDto: UpdateWarDto) {
-    const war = await this.findOne(name);
+  async findOne(id: number) {
+    let war: War;
 
-    if (updateWarDto.name)
-      updateWarDto.name = updateWarDto.name.toLowerCase().trim();
+    war = await this.warModel.findOne({ episode_id: id });
+
+    if (!war) throw new NotFoundException(`War with episode #${id} not found`);
+
+    return war;
+  }
+
+  async update(id: number, updateWarDto: UpdateWarDto) {
+    const war = await this.findOne(id);
 
     try {
       await war.updateOne(updateWarDto);
@@ -56,21 +55,22 @@ export class WarsService {
     }
   }
 
-  async remove(name: string) {
-    console.log('ye');
-    const war = await this.findOne(name);
+  async remove(id: number) {
+    const war = await this.findOne(id);
     await war.deleteOne();
+
+    return `Film with id #${id} was deleted`;
   }
 
   private hanldeExceptions(error: any) {
     if (error.code === 11000) {
       throw new BadGatewayException(
-        `Pokemon exist in db ${JSON.stringify(error.keyValue)}`,
+        `Film exist in db ${JSON.stringify(error.keyValue)}`,
       );
     }
 
     throw new InternalServerErrorException(
-      `Can't create War, please check server logs `,
+      `Can't create Film, please check server logs `,
     );
   }
 }

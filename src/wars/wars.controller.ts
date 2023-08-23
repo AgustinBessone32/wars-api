@@ -25,20 +25,18 @@ export class WarsController {
     return this.warsService.findAll();
   }
 
-  @Get(':name')
-  findOne(@Param('name') name: string) {
-    return this.warsService.findOne(name);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.warsService.findOne(+id);
   }
 
-  @Put(':name')
-  update(@Param('name') name: string, @Body() updateWarDto: UpdateWarDto) {
-    return this.warsService.update(name, updateWarDto);
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateWarDto: UpdateWarDto) {
+    return this.warsService.update(+id, updateWarDto);
   }
 
-  @Delete(':name')
-  remove(@Param('name') name: string) {
-    console.log('siii');
-    return 'si';
-    //return this.warsService.remove(name);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.warsService.remove(+id);
   }
 }

@@ -15,5 +15,6 @@ import { WarsService } from './wars.service';
       },
     ]),
   ],
+  exports: [MongooseModule],
 })
 export class WarsModule {}

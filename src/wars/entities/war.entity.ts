@@ -7,12 +7,14 @@ export class War extends Document {
     unique: true,
     index: true,
   })
-  name: string;
+  title: string;
   @Prop({
     unique: true,
     index: true,
   })
-  no: number;
+  episode_id: number;
+  @Prop()
+  director: string;
 }
 
 export const WarSchema = SchemaFactory.createForClass(War);
