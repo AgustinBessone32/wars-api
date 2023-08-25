@@ -25,7 +25,7 @@ export class AuthService {
 
       const user = await this.userModel.create({
         ...userData,
-        password: bcrypt.hash(password, 10),
+        password: bcrypt.hashSync(password, 10),
       });
 
       const { email, fullName } = user;
