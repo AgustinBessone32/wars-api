@@ -23,7 +23,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
       inject: [],
       useFactory: () => {
         return {
-          secret: 'Est3EsM1S33D',
+          secret: process.env.JWT_SECRET,
           signOptions: {
             expiresIn: '2h',
           },

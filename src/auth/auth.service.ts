@@ -25,7 +25,7 @@ export class AuthService {
 
       const user = await this.userModel.create({
         ...userData,
-        password: bcrypt.hashSync(password, 10),
+        password: bcrypt.hash(password, 10),
       });
 
       const { email, fullName } = user;
@@ -68,6 +68,7 @@ export class AuthService {
   }
 
   private handleDBErrors(error: any) {
+    console.log('error', error);
     if (error.code === 11000) {
       throw new BadGatewayException(
         `User exist in db ${JSON.stringify(error.keyValue)}`,

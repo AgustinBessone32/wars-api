@@ -10,7 +10,7 @@ import { JwtPayload } from '../interfaces/jwt-payload.interface';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {
     super({
-      secretOrKey: 'Est3EsM1S33D',
+      secretOrKey: process.env.JWT_SECRET,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
