@@ -11,6 +11,7 @@ import { Model } from 'mongoose';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { User } from './entities/user.entity';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { UserResponse } from './interfaces/user-response.interface';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,7 @@ export class AuthService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<UserResponse> {
     try {
       const { password, ...userData } = createUserDto;
 
@@ -38,7 +39,7 @@ export class AuthService {
     }
   }
 
-  async login(loginUserDto: LoginUserDto) {
+  async login(loginUserDto: LoginUserDto): Promise<UserResponse> {
     const { password, email } = loginUserDto;
 
     const user = await this.userModel.findOne({ email });
