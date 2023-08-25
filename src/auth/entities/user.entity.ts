@@ -7,9 +7,7 @@ export class User extends Document {
     unique: true,
   })
   email: string;
-  @Prop({
-    select: false,
-  })
+  @Prop()
   password: string;
   @Prop()
   fullName: string;

@@ -15,11 +15,20 @@ export class SeedService {
 
     const insertArrayPromise = [];
 
-    data.results.forEach(async ({ episode_id, title, director }) => {
-      insertArrayPromise.push(
-        this.warModel.create({ episode_id, title, director }),
-      );
-    });
+    data.results.forEach(
+      async ({ episode_id, title, director, producer, created, edited }) => {
+        insertArrayPromise.push(
+          this.warModel.create({
+            episode_id,
+            title,
+            director,
+            producer,
+            created,
+            edited,
+          }),
+        );
+      },
+    );
 
     await Promise.all(insertArrayPromise);
 

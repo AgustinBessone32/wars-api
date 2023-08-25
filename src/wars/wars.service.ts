@@ -4,10 +4,9 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  SetMetadata,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { CreateWarDto } from './dto/create-war.dto';
 import { UpdateWarDto } from './dto/update-war.dto';
 import { War } from './entities/war.entity';
@@ -16,8 +15,14 @@ import { War } from './entities/war.entity';
 export class WarsService {
   constructor(@InjectModel(War.name) private readonly warModel: Model<War>) {}
 
-  async create(createWarDto: CreateWarDto) {
+  async create(createWarDto: CreateWarDto): Promise<War> {
     try {
+      createWarDto.edited = createWarDto.edited
+        ? createWarDto.edited
+        : new Date().toISOString();
+      createWarDto.created = createWarDto.created
+        ? createWarDto.created
+        : new Date().toISOString();
       const war = await this.warModel.create(createWarDto);
 
       return war;
@@ -26,7 +31,7 @@ export class WarsService {
     }
   }
 
-  async findAll() {
+  async findAll(): Promise<War[]> {
     let war: War[];
 
     war = await this.warModel.find();
@@ -34,34 +39,40 @@ export class WarsService {
     return war;
   }
 
-  @SetMetadata('roles', ['user'])
-  async findOne(id: number) {
+  async findOne(id: string): Promise<War> {
     let war: War;
 
-    war = await this.warModel.findOne({ episode_id: id });
+    if (isValidObjectId(id)) {
+      war = await this.warModel.findById(id);
+    }
 
     if (!war) throw new NotFoundException(`War with episode #${id} not found`);
 
     return war;
   }
 
-  async update(id: number, updateWarDto: UpdateWarDto) {
-    const war = await this.findOne(id);
+  async update(id: string, updateWarDto: UpdateWarDto) {
+    updateWarDto.edited = new Date().toISOString();
+    const updated = await this.warModel.findByIdAndUpdate(id, updateWarDto);
 
-    try {
-      await war.updateOne(updateWarDto);
+    if (updated) return updated;
 
-      return { ...war.toJSON(), ...updateWarDto };
-    } catch (error) {
-      this.hanldeExceptions(error);
-    }
+    throw new BadGatewayException(`Film with id #${id} isn't in db`);
   }
 
-  async remove(id: number) {
-    const war = await this.findOne(id);
-    await war.deleteOne();
+  async remove(id: string) {
+    const deleted = await this.warModel.findByIdAndRemove(id);
 
-    return `Film with id #${id} was deleted`;
+    if (deleted)
+      return {
+        deleted: true,
+        message: `Film with id #${id} was deleted`,
+      };
+
+    return {
+      deleted: false,
+      message: `Film with id #${id} couldn't deleted`,
+    };
   }
 
   private hanldeExceptions(error: any) {
